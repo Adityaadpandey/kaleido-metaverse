@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "gathertown-meta",
   "private": true,
   "scripts": {
     "build": "turbo run build",
