@@ -1,0 +1,239 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id @unique @default(cuid())
+  username    String    @unique
+  password    String
+  email       String?   @unique
+  displayName String?
+  bio         String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  lastOnline  DateTime?
+  role        Role      @default(User)
+  isActive    Boolean   @default(true)
+
+  avatars         Avatar[]
+  currentAvatarId String?
+  currentAvatar   Avatar?  @relation("CurrentAvatar", fields: [currentAvatarId], references: [id])
+
+  ownedSpaces    Space[]         @relation("SpaceOwner")
+  friends        Friendship[]    @relation("UserFriends")
+  friendsOf      Friendship[]    @relation("FriendOf")
+  spacePresences SpacePresence[]
+  chatMessages   ChatMessage[]
+  inventory      InventoryItem[]
+}
+
+model Friendship {
+  id        String           @id @unique @default(cuid())
+  userId    String
+  user      User             @relation("UserFriends", fields: [userId], references: [id])
+  friendId  String
+  friend    User             @relation("FriendOf", fields: [friendId], references: [id])
+  createdAt DateTime         @default(now())
+  status    FriendshipStatus @default(Pending)
+
+  @@unique([userId, friendId])
+}
+
+enum FriendshipStatus {
+  Pending
+  Accepted
+  Blocked
+}
+
+model Space {
+  id              String          @id @unique @default(cuid())
+  name            String
+  description     String?
+  isPublic        Boolean         @default(true)
+  width           Int
+  height          Int
+  depth           Int?
+  thumbnail       String?
+  backgroundImage String?
+  gravity         Float?
+  lightingTheme   String?
+  ownerId         String?
+  owner           User?           @relation("SpaceOwner", fields: [ownerId], references: [id])
+  elements        SpaceElement[]
+  instances       SpaceInstance[]
+  userPresences   SpacePresence[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model SpaceInstance {
+  id            String          @id @unique @default(cuid())
+  spaceId       String
+  space         Space           @relation(fields: [spaceId], references: [id])
+  name          String?
+  maxUsers      Int?
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  userPresences SpacePresence[]
+}
+
+model SpaceElement {
+  id              String   @id @unique @default(cuid())
+  elementId       String
+  element         Element  @relation(fields: [elementId], references: [id])
+  spaceId         String
+  space           Space    @relation(fields: [spaceId], references: [id])
+  x               Float
+  y               Float
+  z               Float    @default(0)
+  rotationX       Float?   @default(0)
+  rotationY       Float?   @default(0)
+  rotationZ       Float?   @default(0)
+  scale           Float?   @default(1)
+  isInteractive   Boolean  @default(false)
+  interactionType String?
+  interactionData String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model SpacePresence {
+  id          String         @id @unique @default(cuid())
+  userId      String
+  user        User           @relation(fields: [userId], references: [id])
+  spaceId     String
+  space       Space          @relation(fields: [spaceId], references: [id])
+  instanceId  String?
+  instance    SpaceInstance? @relation(fields: [instanceId], references: [id])
+  x           Float          @default(0)
+  y           Float          @default(0)
+  z           Float          @default(0)
+  rotationX   Float          @default(0)
+  rotationY   Float          @default(0)
+  rotationZ   Float          @default(0)
+  isActive    Boolean        @default(true)
+  status      PresenceStatus @default(Online)
+  joinedAt    DateTime       @default(now())
+  lastUpdated DateTime       @default(now())
+
+  @@unique([userId, spaceId, instanceId])
+}
+
+enum PresenceStatus {
+  Online
+  Away
+  Busy
+  Invisible
+}
+
+model Element {
+  id             String          @id @unique @default(cuid())
+  name           String
+  type           ElementType     @default(Static)
+  width          Int
+  height         Int
+  depth          Int?
+  imageUrl       String?
+  modelUrl       String?
+  thumbnailUrl   String?
+  isCollidable   Boolean         @default(false)
+  tags           String?
+  category       String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  spaces         SpaceElement[]
+  mapElements    MapElement[]
+  inventoryItems InventoryItem[]
+}
+
+enum ElementType {
+  Static
+  Interactive
+  Avatar
+  Portal
+  Vehicle
+  Container
+}
+
+model Map {
+  id          String       @id @unique @default(cuid())
+  name        String
+  description String?
+  width       Int
+  height      Int
+  imageUrl    String?
+  elements    MapElement[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model MapElement {
+  id            String   @id @unique @default(cuid())
+  mapId         String
+  map           Map      @relation(fields: [mapId], references: [id])
+  elementId     String?
+  element       Element? @relation(fields: [elementId], references: [id])
+  x             Float
+  y             Float
+  label         String?
+  icon          String?
+  color         String?
+  isHighlighted Boolean  @default(false)
+}
+
+model Avatar {
+  id              String   @id @unique @default(cuid())
+  name            String?
+  imageUrl        String?
+  modelUrl        String?
+  thumbnailUrl    String?
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id])
+  currentForUsers User[]   @relation("CurrentAvatar")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ChatMessage {
+  id          String   @id @unique @default(cuid())
+  content     String
+  senderId    String
+  sender      User     @relation(fields: [senderId], references: [id])
+  spaceId     String?
+  channelId   String?
+  recipientId String?
+  createdAt   DateTime @default(now())
+  isEdited    Boolean  @default(false)
+  isDeleted   Boolean  @default(false)
+}
+
+model InventoryItem {
+  id         String    @id @unique @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  elementId  String
+  element    Element   @relation(fields: [elementId], references: [id])
+  quantity   Int       @default(1)
+  isEquipped Boolean   @default(false)
+  acquiredAt DateTime  @default(now())
+  expiresAt  DateTime?
+}
+
+enum Role {
+  Admin
+  Moderator
+  Creator
+  User
+  Guest
+}
