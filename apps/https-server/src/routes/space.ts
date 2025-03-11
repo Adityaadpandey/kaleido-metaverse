@@ -1,5 +1,4 @@
 import { Router } from "express";
-// import { db } from "@repo/db";
 
 const app = Router();
 
