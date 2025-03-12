@@ -3,6 +3,7 @@ import { client } from "@repo/db/client";
 import bcrypt from "bcryptjs";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
+import authMiddleware from "../middleware/index.js";
 
 const user = Router();
 
@@ -55,7 +56,7 @@ user.post('/login', async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ error: "Incorrect password. Please try again." });
         }
-
+        console.log(process.env.JWT_SECRET);
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, { expiresIn: "1d" });
 
         res.json({ message: "Login successful", token, user });
@@ -83,7 +84,7 @@ user.get('/:username', async (req, res) => {
 });
 
 // Update user profile
-user.patch('/:id', async (req, res) => {
+user.patch('/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         const { username, email } = req.body;
@@ -123,7 +124,7 @@ user.patch('/:id', async (req, res) => {
 });
 
 // Delete user
-user.delete('/:id', async (req, res) => {
+user.delete('/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
 
