@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client"; // Import Prisma for error handling
+import { Prisma } from "@prisma/client";
 import { client } from "@repo/db/client";
 import bcrypt from "bcryptjs";
 import { Router } from "express";
