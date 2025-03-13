@@ -4,28 +4,32 @@ import authMiddleware from "../middleware/index.js";
 
 const avatarRouter = Router();
 
-// Get user avatar (public)
+// Function to generate a DiceBear avatar URL
+const generateDiceBearAvatar = (id: string) => {
+    return `https://api.dicebear.com/7.x/bottts/svg?seed=${id}`;
+};
+
+// Get user avatar
 avatarRouter.get("/:id", async (req, res) => {
     try {
         const { id } = req.params;
 
-        const user = await client.user.findUnique({
+        const user = await client.avatar.findUnique({
             where: { id },
-            select: { avatar: true },
+            select: { imageUrl: true },
         });
 
-        if (!user || !user.avatar) {
-            return res.status(404).json({ error: "Avatar not found" });
-        }
+        // If no avatar, generate a default DiceBear avatar
+        const avatarUrl = user?.imageUrl || generateDiceBearAvatar(id);
 
-        res.json({ avatar: user.avatar });
+        res.json({ avatar: avatarUrl });
     } catch (error) {
         console.error("Get Avatar Error:", error);
         res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
 });
 
-// Create/update avatar (protected)
+// Create/update avatar
 avatarRouter.post("/", authMiddleware, async (req, res) => {
     try {
         const { avatarUrl } = req.body;
@@ -34,24 +38,25 @@ avatarRouter.post("/", authMiddleware, async (req, res) => {
             return res.status(400).json({ error: "Avatar URL is required" });
         }
 
-        const updatedUser = await client.user.update({
+        const updatedUser = await client.avatar.upsert({
             where: { id: req.user!.id },
-            data: { avatar: avatarUrl },
+            update: { imageUrl: avatarUrl },
+            create: { id: req.user!.id, imageUrl: avatarUrl },
         });
 
-        res.status(201).json({ message: "Avatar updated successfully", avatar: updatedUser.avatar });
+        res.status(201).json({ message: "Avatar updated successfully", avatar: updatedUser.imageUrl });
     } catch (error) {
         console.error("Update Avatar Error:", error);
         res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
 });
 
-// Delete avatar (protected)
+// delete avatar
 avatarRouter.delete("/", authMiddleware, async (req, res) => {
     try {
-        await client.user.update({
+        await client.avatar.update({
             where: { id: req.user!.id },
-            data: { avatar: null },
+            update: { imageUrl: null },
         });
 
         res.json({ message: "Avatar deleted successfully" });

@@ -2,7 +2,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
-import user from "./routes/user.js";
+import avatarRouter from './routes/avatar.js';
+import elementRouter from "./routes/elements.js";
+import friendshipRouter from './routes/friendship.js';
+import inventoryRouter from './routes/inventory.js';
+import spaceRouter from './routes/space.js';
+import userRouter from "./routes/user.js";
 
 const app = express();
 
@@ -19,7 +24,12 @@ app.get('/', (req, res) => {
 })
 
 
-app.use('/api/v1/auth/', user );
+app.use('/api/v1/auth/', userRouter);
+app.use('/api/v1/avatar', avatarRouter);
+app.use('/api/v1/friendship', friendshipRouter);
+app.use('/api/v1/element', elementRouter);
+app.use('/api/v1/space', spaceRouter);
+app.use('/api/v1/inventory', inventoryRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

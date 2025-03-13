@@ -1,15 +1,36 @@
 {
   "name": "ws-server",
-  "module": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
+  "scripts": {
+    "build": "esbuild ./src/index.ts --bundle --platform=node --format=esm --packages=external --outdir=dist/",
+    "dev": "tsx watch ./src/server.ts",
+    "start": "node dist/server.js"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@repo/db": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "esbuild": "^0.19.12",
+    "@types/bun": "latest",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.11.8",
+    "@types/ws": "^8.5.10",
+    "eslint": "^8.56.0",
+    "rimraf": "^5.0.5",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "websocket": "^1.0.35"
+    "http": "^0.0.1-security",
+    "uuid": "^11.1.0",
+    "websocket": "^1.0.35",
+    "ws": "^8.16.0"
   }
 }
