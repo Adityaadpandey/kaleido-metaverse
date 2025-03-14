@@ -7,6 +7,7 @@ import elementRouter from "./routes/elements.js";
 import friendshipRouter from './routes/friendship.js';
 import inventoryRouter from './routes/inventory.js';
 import spaceRouter from './routes/space.js';
+import spaceInstanceRouter from './routes/spaceintst.js';
 import userRouter from "./routes/user.js";
 
 const app = express();
@@ -29,6 +30,7 @@ app.use('/api/v1/avatar', avatarRouter);
 app.use('/api/v1/friendship', friendshipRouter);
 app.use('/api/v1/element', elementRouter);
 app.use('/api/v1/space', spaceRouter);
+app.use('/api/v1/spaceinstance', spaceInstanceRouter);
 app.use('/api/v1/inventory', inventoryRouter);
 
 app.listen(port, () => {

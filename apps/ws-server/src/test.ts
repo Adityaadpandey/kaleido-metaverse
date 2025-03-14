@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
 import WebSocket from 'ws';
 
 // Load environment variables
@@ -36,19 +35,8 @@ const testUsers = [
 
 // Test space data - ensure these IDs exist in your database or are handled by your mock
 const testSpace = {
-    "id": "cm877i3ih0001i0zzhqsv61wo",
-    "name": "Virtual Galaxy",
-    "description": "A vast space for interstellar exploration.",
-    "isPublic": true,
-    "width": 1000,
-    "height": 800,
-    "depth": 500,
-    "thumbnail": null,
-    "backgroundImage": "https://example.com/space-bg.jpg",
-    "gravity": 9.8,
-    "lightingTheme": "dark",
-    "ownerId": "cm85sfm0w0000i0n17axkzvic",
-    "instanceId": uuidv4(),
+    id: "cm877i3ih0001i0zzhqsv61wo",
+    instanceId: "cm88wooe40001i0ogl71iktws",
 };
 
 // Connect a WebSocket client with the given user
