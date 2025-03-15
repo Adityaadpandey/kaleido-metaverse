@@ -35,7 +35,9 @@ elementRouter.get("/", async (req, res) => {
     res.json({ elements });
   } catch (error) {
     console.error("Get Elements Error:", error);
-    res.status(500).json({ error: "Internal Server Error", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
   }
 });
 
@@ -55,7 +57,9 @@ elementRouter.get("/:id", async (req, res) => {
     res.json({ element });
   } catch (error) {
     console.error("Get Element Error:", error);
-    res.status(500).json({ error: "Internal Server Error", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
   }
 });
 
@@ -87,7 +91,9 @@ elementRouter.post("/", authMiddleware, async (req, res) => {
     } = req.body;
 
     if (!name || !width || !height) {
-      return res.status(400).json({ error: "Name, width, and height are required" });
+      return res
+        .status(400)
+        .json({ error: "Name, width, and height are required" });
     }
 
     const newElement = await client.element.create({
@@ -106,10 +112,14 @@ elementRouter.post("/", authMiddleware, async (req, res) => {
       },
     });
 
-    res.status(201).json({ message: "Element created successfully", element: newElement });
+    res
+      .status(201)
+      .json({ message: "Element created successfully", element: newElement });
   } catch (error) {
     console.error("Create Element Error:", error);
-    res.status(500).json({ error: "Internal Server Error", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
   }
 });
 
@@ -158,10 +168,15 @@ elementRouter.put("/:id", authMiddleware, async (req, res) => {
       },
     });
 
-    res.json({ message: "Element updated successfully", element: updatedElement });
+    res.json({
+      message: "Element updated successfully",
+      element: updatedElement,
+    });
   } catch (error) {
     console.error("Update Element Error:", error);
-    res.status(500).json({ error: "Internal Server Error", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
   }
 });
 
@@ -193,7 +208,9 @@ elementRouter.delete("/:id", authMiddleware, async (req, res) => {
     res.json({ message: "Element deleted successfully" });
   } catch (error) {
     console.error("Delete Element Error:", error);
-    res.status(500).json({ error: "Internal Server Error", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
   }
 });
 
