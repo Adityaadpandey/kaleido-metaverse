@@ -87,28 +87,29 @@ friendshipRouter.get("/pending", authMiddleware, async (req, res) => {
 });
 
 // Send friend request
+// Send friend request by username
 friendshipRouter.post("/request", authMiddleware, async (req, res) => {
   try {
-    const { friendId } = req.body;
+    const { username } = req.body;
 
-    if (!friendId) {
-      return res.status(400).json({ error: "Friend ID is required" });
+    if (!username) {
+      return res.status(400).json({ error: "Username is required" });
     }
 
-    if (friendId === req.user.id) {
-      return res
-        .status(400)
-        .json({ error: "Cannot send friend request to yourself" });
-    }
-
-    // Check if user exists
+    // Find the user by username
     const friend = await client.user.findUnique({
-      where: { id: friendId },
+      where: { username },
       select: { id: true },
     });
 
     if (!friend) {
       return res.status(404).json({ error: "User not found" });
+    }
+
+    const friendId = friend.id;
+
+    if (friendId === req.user.id) {
+      return res.status(400).json({ error: "Cannot send friend request to yourself" });
     }
 
     // Check if friendship already exists
@@ -128,7 +129,7 @@ friendshipRouter.post("/request", authMiddleware, async (req, res) => {
       });
     }
 
-    // Create friendship
+    // Create friendship request
     const friendship = await client.friendship.create({
       data: {
         userId: req.user.id,
@@ -140,11 +141,10 @@ friendshipRouter.post("/request", authMiddleware, async (req, res) => {
     res.status(201).json({ message: "Friend request sent", friendship });
   } catch (error) {
     console.error("Send Friend Request Error:", error);
-    res
-      .status(500)
-      .json({ error: "Internal Server Error", details: error.message });
+    res.status(500).json({ error: "Internal Server Error", details: error.message });
   }
 });
+
 
 // Accept friend request
 friendshipRouter.post("/accept", authMiddleware, async (req, res) => {
