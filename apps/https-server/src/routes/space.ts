@@ -14,6 +14,7 @@ spaceRouter.get("/public", async (req, res) => {
         name: true,
         description: true,
         thumbnail: true,
+        backgroundImage: true,
         owner: {
           select: {
             id: true,

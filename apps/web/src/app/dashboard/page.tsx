@@ -13,6 +13,7 @@ import {
     CardTitle
 } from "@/components/ui/card";
 import Friends from "./_components/Friends";
+import Space from './_components/Space';
 
 
 
@@ -80,6 +81,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
+                <Space />
             </div>
         </div>
 
