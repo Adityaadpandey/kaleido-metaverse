@@ -1,9 +1,8 @@
-import { ToastProvider } from "@/components/ui/toast-provider";
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
+import { Toaster } from "sonner";
 import { ThemeProvider } from "../components/global/theme-provider";
 import "./globals.css";
-
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,8 +25,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
-            <ToastProvider />
-
+            <Toaster position="top-right" />
           </ThemeProvider>
         </body>
       </html>

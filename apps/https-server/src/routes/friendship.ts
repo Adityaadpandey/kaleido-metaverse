@@ -20,8 +20,14 @@ friendshipRouter.get("/", authMiddleware, async (req, res) => {
             id: true,
             username: true,
             displayName: true,
-            currentAvatar: true,
             lastOnline: true,
+            avatars: {
+              select: {
+                id: true,
+                imageUrl: true,
+                thumbnailUrl: true,
+              }
+            },
           },
         },
         friend: {
@@ -29,8 +35,14 @@ friendshipRouter.get("/", authMiddleware, async (req, res) => {
             id: true,
             username: true,
             displayName: true,
-            currentAvatar: true,
             lastOnline: true,
+            avatars: {
+              select: {
+                id: true,
+                imageUrl: true,
+                thumbnailUrl: true,
+              }
+            },
           },
         },
       },
@@ -71,7 +83,13 @@ friendshipRouter.get("/pending", authMiddleware, async (req, res) => {
             id: true,
             username: true,
             displayName: true,
-            currentAvatar: true,
+            currentAvatar: {
+              select: {
+                id: true,
+                imageUrl: true,
+                thumbnailUrl: true,
+              }
+            },
           },
         },
       },
@@ -109,7 +127,9 @@ friendshipRouter.post("/request", authMiddleware, async (req, res) => {
     const friendId = friend.id;
 
     if (friendId === req.user.id) {
-      return res.status(400).json({ error: "Cannot send friend request to yourself" });
+      return res
+        .status(400)
+        .json({ error: "Cannot send friend request to yourself" });
     }
 
     // Check if friendship already exists
@@ -141,10 +161,11 @@ friendshipRouter.post("/request", authMiddleware, async (req, res) => {
     res.status(201).json({ message: "Friend request sent", friendship });
   } catch (error) {
     console.error("Send Friend Request Error:", error);
-    res.status(500).json({ error: "Internal Server Error", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
   }
 });
-
 
 // Accept friend request
 friendshipRouter.post("/accept", authMiddleware, async (req, res) => {
