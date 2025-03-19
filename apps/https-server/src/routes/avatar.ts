@@ -19,7 +19,7 @@ avatarRouter.get("/:id", async (req, res) => {
     // First check if the user exists
     const user = await client.user.findUnique({
       where: { id },
-      include: { currentAvatar: true }
+      include: { currentAvatar: true },
     });
 
     if (!user) {
@@ -49,9 +49,9 @@ avatarRouter.get("/:id", async (req, res) => {
             name: `Generated Avatar for ${user.username || id}`,
             user: {
               connect: {
-                id: user.id
-              }
-            }
+                id: user.id,
+              },
+            },
           },
         });
 

@@ -26,7 +26,7 @@ friendshipRouter.get("/", authMiddleware, async (req, res) => {
                 id: true,
                 imageUrl: true,
                 thumbnailUrl: true,
-              }
+              },
             },
           },
         },
@@ -41,7 +41,7 @@ friendshipRouter.get("/", authMiddleware, async (req, res) => {
                 id: true,
                 imageUrl: true,
                 thumbnailUrl: true,
-              }
+              },
             },
           },
         },
@@ -88,7 +88,7 @@ friendshipRouter.get("/pending", authMiddleware, async (req, res) => {
                 id: true,
                 imageUrl: true,
                 thumbnailUrl: true,
-              }
+              },
             },
           },
         },
